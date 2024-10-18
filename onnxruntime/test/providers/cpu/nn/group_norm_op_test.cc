@@ -57,7 +57,8 @@ TYPED_TEST(GroupNormalizationOpTest, InstanceNorm) {
 
                                    -0.92380346f, -0.60808484f, 0.04711878f, 1.48476953f,
                                    -0.14644464f, -0.82262872f, -0.66852817f, 1.63760153f,
-                                   -1.65898662f, 0.27618144f, 0.64840618f, 0.734399f,};
+                                   -1.65898662f, 0.27618144f, 0.64840618f, 0.734399f};
+
   test.AddOutput<TypeParam>("Y", input_dims, GetTypedArray<TypeParam>(expected_output));
 
   std::vector<std::unique_ptr<IExecutionProvider>> execution_providers;
@@ -65,7 +66,6 @@ TYPED_TEST(GroupNormalizationOpTest, InstanceNorm) {
   // coreml EP requires weight and bias to be initializers
   test.Run(OpTester::ExpectResult::kExpectSuccess, "", {}, nullptr, &execution_providers);
 }
-
 
 TYPED_TEST(GroupNormalizationOpTest, LayerNorm17_opset) {
   auto run_test = [](bool is_initializer) {
@@ -77,7 +77,7 @@ TYPED_TEST(GroupNormalizationOpTest, LayerNorm17_opset) {
     test.AddInput<TypeParam>("x", dims, GetTypedArray<TypeParam>({1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}));
     test.AddInput<TypeParam>("scale", {3}, GetTypedArray<TypeParam>({1.0f, 1.0f, 1.0f}), is_initializer);
     test.AddInput<TypeParam>("bias", {3}, GetTypedArray<TypeParam>({.0f, .0f, .0f}), is_initializer);
-    test.AddOutput<TypeParam>("output", dims, GetTypedArray<TypeParam>({-1.4638f, -0.8783f, -0.2928f, 0.2928f,  0.8783f,  1.4638f}));
+    test.AddOutput<TypeParam>("output", dims, GetTypedArray<TypeParam>({-1.4638f, -0.8783f, -0.2928f, 0.2928f, 0.8783f, 1.4638f}));
 
     std::vector<std::unique_ptr<IExecutionProvider>> execution_providers;
     execution_providers.push_back(DefaultCoreMLExecutionProvider(true));
@@ -95,18 +95,18 @@ TYPED_TEST(GroupNormalizationOpTest, groupsizen) {
   test.AddAttribute("num_groups", int64_t(2));
 
   vector<float> input = {-1.1258f, -1.1524f, -0.2506f, -0.4339f,
-                        0.8487f,  0.6920f, -0.3160f, -2.1152f,
-                        0.3223f, -1.2633f,  0.3500f,  0.3081f,
-                        0.1198f,  1.2377f,  1.1168f, -0.2473f,
-                        -1.3527f, -1.6959f,  0.5667f,  0.7935f,
-                        0.5988f, -1.5551f, -0.3414f,  1.8530f,
+                         0.8487f, 0.6920f, -0.3160f, -2.1152f,
+                         0.3223f, -1.2633f, 0.3500f, 0.3081f,
+                         0.1198f, 1.2377f, 1.1168f, -0.2473f,
+                         -1.3527f, -1.6959f, 0.5667f, 0.7935f,
+                         0.5988f, -1.5551f, -0.3414f, 1.8530f,
 
-                        0.7502f, -0.5855f, -0.1734f,  0.1835f,
-                        1.3894f,  1.5863f,  0.9463f, -0.8437f,
-                        -0.6136f,  0.0316f, -0.4927f,  0.2484f,
-                        0.4397f,  0.1124f,  0.6408f,  0.4412f,
-                        -0.1023f,  0.7924f, -0.2897f,  0.0525f,
-                        0.5229f,  2.3022f, -1.4689f, -1.5867f};
+                         0.7502f, -0.5855f, -0.1734f, 0.1835f,
+                         1.3894f, 1.5863f, 0.9463f, -0.8437f,
+                         -0.6136f, 0.0316f, -0.4927f, 0.2484f,
+                         0.4397f, 0.1124f, 0.6408f, 0.4412f,
+                         -0.1023f, 0.7924f, -0.2897f, 0.0525f,
+                         0.5229f, 2.3022f, -1.4689f, -1.5867f};
   vector<int64_t> input_dims = {2, 6, 4};
   test.AddInput<TypeParam>("X", input_dims, GetTypedArray<TypeParam>(input));
 
@@ -118,19 +118,20 @@ TYPED_TEST(GroupNormalizationOpTest, groupsizen) {
   vector<int64_t> B_dims = {6};
   test.AddInput<TypeParam>("bias", B_dims, GetTypedArray<TypeParam>(B), true);
 
-  vector<float> expected_output = {-0.7590f, -0.7848f,  0.0914f, -0.0867f,
-                                  1.1595f,  1.0073f,  0.0278f, -1.7203f,
-                                  0.6480f, -0.8926f,  0.6749f,  0.6343f,
-                                  0.0232f,  0.9274f,  0.8296f, -0.2738f,
-                                  -1.1679f, -1.4456f,  0.3846f,  0.5681f,
-                                  0.4107f, -1.3317f, -0.3499f,  1.4252f,
+  vector<float> expected_output = {
+      -0.7590f, -0.7848f, 0.0914f, -0.0867f,
+      1.1595f, 1.0073f, 0.0278f, -1.7203f,
+      0.6480f, -0.8926f, 0.6749f, 0.6343f,
+      0.0232f, 0.9274f, 0.8296f, -0.2738f,
+      -1.1679f, -1.4456f, 0.3846f, 0.5681f,
+      0.4107f, -1.3317f, -0.3499f, 1.4252f,
 
-                                  0.5772f, -0.8298f, -0.3957f, -0.0198f,
-                                  1.2505f,  1.4580f,  0.7838f, -1.1017f,
-                                  -0.8594f, -0.1798f, -0.7320f,  0.0486f,
-                                  0.2541f, -0.0377f,  0.4334f,  0.2554f,
-                                  -0.2291f,  0.5686f, -0.3962f, -0.0911f,
-                                  0.3282f,  1.9145f, -1.4475f, -1.5525f,};
+      0.5772f, -0.8298f, -0.3957f, -0.0198f,
+      1.2505f, 1.4580f, 0.7838f, -1.1017f,
+      -0.8594f, -0.1798f, -0.7320f, 0.0486f,
+      0.2541f, -0.0377f, 0.4334f, 0.2554f,
+      -0.2291f, 0.5686f, -0.3962f, -0.0911f,
+      0.3282f, 1.9145f, -1.4475f, -1.5525f};
   test.AddOutput<TypeParam>("Y", input_dims, GetTypedArray<TypeParam>(expected_output));
 
   std::vector<std::unique_ptr<IExecutionProvider>> execution_providers;
@@ -143,7 +144,6 @@ TYPED_TEST(GroupNormalizationOpTest, groupsizen) {
   }
   test.Run(OpTester::ExpectResult::kExpectSuccess, "", {}, nullptr, &execution_providers);
 }
-
 
 }  // namespace test
 }  // namespace onnxruntime
